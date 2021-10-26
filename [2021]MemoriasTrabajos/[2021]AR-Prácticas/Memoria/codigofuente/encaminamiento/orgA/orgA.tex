@@ -1,0 +1,34 @@
+%%%%%%%%%%%% Encaminamiento intra-dominio IPv4 - organización A  %%%%%%%%%%%%
+
+\section{Organización A}
+
+\par Voy a configurar y administrar las subredes de la organización A con el protocolo de encaminamiento RIP.
+\par En cada router hay que poner esto comandos:
+%%% CÓDIGO %%%
+\begin{listing}[style=consola]
+Router> enable
+Router# configure terminal
+Router(config)# router rip
+Router(config-router)# version 2
+Router(config-router)# network 173.89.0.0
+Router(config-router)# no auto-summary
+\end{listing}
+\par Utilizo la \textbf{versión 2} de RIP porque estoy implementando \textbf{subnetting} y \textbf{VLSM (variable length subnet masks)} que permite que las máscaras sean de tamaño variable. También, me aseguro de que \textbf{no realice agregación automática de rutas}, porque quiero que en cada vector distancia aparezca una entrada por cada subred en vez de sólo la dirección de red agregada.
+\par Como todos los routers conectan subredes que pertenecen a la misma red IP que es la 173.89.0.0/22, no es necesario indicar cada subred conectada directamente a los routers. Indicando simplemente la \textbf{dirección de red classful}, la implementación se encargará de anunciar cada subred de forma independiente en cada router.
+\par Además, en los routers que están conectados a las subredes \texttt{LAN} incluyo este comando, porque son redes que sólo contienen hosts y dichos hosts no ejecutan RIP, puesto que he configurado manualmente sus rutas. Las interfaces de los routers que están conectadas a estas subredes actuarán de \textbf{forma ``pasiva''} respecto a \texttt{RIP} para no obtener un gasto inútil de ancho de banda.
+\par En el router \texttt{RouterA0} 
+\begin{listing}[style=consola]
+RouterA0(config-router)# passive-interface FastEthernet 0/0
+RouterA0(config-router)# passive-interface FastEthernet 1/0
+\end{listing}
+\par En los routers \texttt{RouterA2, RouterA3 y RouterA4}
+\begin{listing}[style=consola]
+Router(config-router)# passive-interface FastEthernet 0/0
+\end{listing}
+
+\input{codigofuente/encaminamiento/orgA/cuest1}
+\input{codigofuente/encaminamiento/orgA/cuest2}
+\input{codigofuente/encaminamiento/orgA/cuest3}
+
+
+\newpage
