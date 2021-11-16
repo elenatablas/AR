@@ -1,0 +1,151 @@
+%%%%%%%%%%%% DIRECIONAMIENTO ORGANIZACIÓN A  %%%%%%%%%%%%
+	
+\section{Organización A.}
+
+\par La red de la organización A tiene asignado el rango de direcciones IP \textbf{173.89.0.0/22}, siendo 22 el número de bits de la máscara de red. Todas las subredes a definir en dicha red, así como los equipos que pertenezcan a ellas tienen también que compartir esos 22 bits más significativos.
+\par El primer paso es definir cada una de las \textbf{subredes} dentro de la organización:
+\begin{itemize}
+	\item \emph{\textbf{4 subredes de área local}}: LAN1.0, LAN1.1, LAN1.2  y LAN1.3
+	\item \emph{\textbf{7 subredes P2P}}: P2P1.0 (RouterA0-A1), P2P1.1 (RouterA1-A2), P2P1.2 (RouterA0-A3), P2P1.3 (RouterA1-A3), P2P1.4 (RouterA2-A3), P2P1.5 (RouterA3-A4) y P2P1.6 (RouterA2-B0).
+\end{itemize}
+\par Para determinar el número mínimo de direcciones IP de una subred hay que tener en cuenta que se necesita una dirección IP para cada equipo conectado a la misma y una dirección IP para la interfaz de los routers que den acceso a esa subred. Además, se necesitan 2 direcciones IP adicionales: la reservada para la dirección de subred y la dirección broadcast.
+\par En la tabla \ref{tab:orgA.1} aparecen las distintas subredes junto al número de interfaces (host e interfaces de los routers) que lo conforman, y el número de bits que forman el SubNetID y el HostID.
+%%%% TABLA DE SUBREDES DE LA ORGANIZACIÓN A %%%%
+\definecolor{azul}{rgb}{0.36, 0.54, 0.66}
+\definecolor{naranja}{rgb}{1.0, 0.56, 0.0}
+\definecolor{lila}{rgb}{0.62, 0.0, 0.77}
+\definecolor{rosa}{rgb}{0.89, 0.31, 0.61}
+\definecolor{verde}{rgb}{0.3, 0.73, 0.09}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+       	Subred&Número de Interfaces&Bits SubNetID&Bits HostID\\\hline
+	\cellcolor{azul}{LAN1.0}&509&1&9 \\ \hline
+	\cellcolor{naranja}{LAN1.1}&55&4&6 \\ \hline
+	\cellcolor{lila}{LAN1.2}&250&2&8 \\ \hline
+	\cellcolor{rosa}{LAN1.3}&125&3&7 \\ \hline
+	\cellcolor{verde}{P2P1.0}&2&9&2 \\ \hline
+	\cellcolor{verde}{P2P1.1}&2&9&2 \\ \hline
+	\cellcolor{verde}{P2P1.2}&2&9&2 \\ \hline
+	\cellcolor{verde}{P2P1.3}&2&9&2 \\ \hline
+	\cellcolor{verde}{P2P1.4}&2&9&2 \\ \hline
+	\cellcolor{verde}{P2P1.5}&2&9&2 \\ \hline
+	\cellcolor{verde}{P2P1.6}&2&9&2 \\ \hline
+    \end{tabular}
+    \caption{Tabla de subredes de la organización A.}
+    \label{tab:orgA.1}
+\end{table}
+\par El siguiente paso es asignar los rangos de direcciones para cada subred basándome en los nuevos mecanismos de \textbf{subnetting} que permite dividir una red en subredes mediante el uso de una nueva máscara y \textbf{VLSM (variable length subnet masks)} que permite que estas máscaras sean de tamaño variable.
+\par Una forma sencilla de asignar estas direcciones siguiendo un esquema basado en VLSM es empezar por las subredes más grandes y terminar con las subredes más pequeñas para evitar el desperdicio de espacio de direccionamiento, como indico en la tabla \ref{tab:orgA.2}. 
+
+%%%% TABLA REPARTO DE DIRECCIONES ORGANIZACIÓN A %%%%
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|c|c|c|c|}
+        \hline
+       	&+0 &+4&+8&+12&+16&+20&+24&+28\\\hline
+	0&\multicolumn{8}{c}{\cellcolor{azul}{ }}\\
+	32&\multicolumn{8}{c}{\cellcolor{azul}{ }}\\
+	64&\multicolumn{8}{c}{\cellcolor{azul}{}} \\
+	...&\multicolumn{8}{c}{\cellcolor{azul}{LAN1.0}}\\
+	448&\multicolumn{8}{c}{\cellcolor{azul}{ }}\\
+	480&\multicolumn{8}{c}{\cellcolor{azul}{ }}\\ \hline 
+	512&\multicolumn{8}{c}{\cellcolor{lila}{ }}\\
+	544&\multicolumn{8}{c}{\cellcolor{lila}{ }}\\
+	...&\multicolumn{8}{c}{\cellcolor{lila}{LAN1.2}} \\
+	736&\multicolumn{8}{c}{\cellcolor{lila}{ }} \\ \hline
+	768&\multicolumn{8}{c}{\cellcolor{rosa}{ }}  \\ 
+	...&\multicolumn{8}{c}{\cellcolor{rosa}{LAN1.3}}  \\
+	864&\multicolumn{8}{c}{\cellcolor{rosa}{ }}  \\ \hline
+	896&\multicolumn{8}{c}{\cellcolor{naranja}{ LAN1.1}} \\
+	928&\multicolumn{8}{c}{\cellcolor{naranja}{ }} \\ \hline
+	960&\cellcolor{verde}{P2P1.0} &\cellcolor{verde}{P2P1.1} &\cellcolor{verde}{P2P1.2} &\cellcolor{verde}{P2P1.3} &\cellcolor{verde}{P2P1.4} &\cellcolor{verde}{P2P1.5} &\cellcolor{verde}{P2P1.6} &\\ \hline
+	992&&&&&&&& \\ \hline
+    \end{tabular}
+    \caption{Tabla reparto de direcciones organización A.}
+    \label{tab:orgA.2}
+\end{table}
+
+
+\definecolor{rojo}{rgb}{0.93, 0.11, 0.14}
+\begin{itemize}
+	%% Subred LAN1.0 %%
+	\item{\textbf{Subred LAN1.0}:} 173.89.\{\textcolor{azul}{000000}\textcolor{rojo}{0}0\}.\{00000000\}, es decir, \textbf{173.89.0.0/23}
+		\begin{itemize}
+			\item{\textbf{Dirección Broadcast}}: 173.89.\{\textcolor{azul}{000000}\textcolor{rojo}{0}1\}.\{11111111\} = 173.89.1.255
+			\item{\textbf{Dirección IP RouterA0-eth0}}: 173.89.\{\textcolor{azul}{000000}\textcolor{rojo}{0}0\}.\{0000001\} = 173.89.0.1
+			\item{\textbf{Dirección IP HostA1}}: 173.89.\{\textcolor{azul}{000000}\textcolor{rojo}{0}0\}.\{00000010\} = 173.89.0.2
+		\end{itemize}
+	%% Subred LAN1.2 %%
+	\item{\textbf{Subred LAN1.2}:} 173.89.\{\textcolor{azul}{000000}\textcolor{rojo}{10}\}.\{00000000\}, es decir, \textbf{173.89.2.0/24}
+		\begin{itemize}
+			\item{\textbf{Dirección Broadcast}}: 173.89.\{\textcolor{azul}{000000}\textcolor{rojo}{10}\}.\{11111111\} = 173.89.2.255
+			\item{\textbf{Dirección IP RouterA0-eth0}}:173.89.\{\textcolor{azul}{000000}\textcolor{rojo}{10} \}.\{0000001\} = 173.89.2.1
+			\item{\textbf{Dirección IP HostA1}}:173.89.\{\textcolor{azul}{000000}\textcolor{rojo}{10} \}.\{0000010\} = 173.89.2.2
+		\end{itemize}
+	%% Subred LAN1.3 %%
+	\item{\textbf{Subred LAN1.3}:} 173.89.\{\textcolor{azul}{000000}\textcolor{rojo}{11}\}.\{\textcolor{rojo}{0}0000000\}, es decir, \textbf{173.89.3.0/25}
+		\begin{itemize}
+			\item{\textbf{Dirección Broadcast}}: 173.89.\{\textcolor{azul}{000000}\textcolor{rojo}{11}\}.\{\textcolor{rojo}{0}1111111\} = 173.89.3.127
+			\item{\textbf{Dirección IP RouterA0}}:173.89.\{\textcolor{azul}{000000}\textcolor{rojo}{11} \}.\{\textcolor{rojo}{0}000001\} = 173.89.3.1
+			\item{\textbf{Dirección IP HostA1}}:173.89.\{\textcolor{azul}{000000}\textcolor{rojo}{11} \}.\{\textcolor{rojo}{0}000010\} = 173.89.3.2
+		\end{itemize}
+	%% Subred LAN1.1 %%
+	\item{\textbf{Subred LAN1.1}:} 173.89.\{\textcolor{azul}{000000}\textcolor{rojo}{11}\}.\{\textcolor{rojo}{10}000000\}, es decir, \textbf{173.89.3.128/26}
+		\begin{itemize}
+			\item{\textbf{Dirección Broadcast}}: 173.89.\{\textcolor{azul}{000000}\textcolor{rojo}{11}\}.\{\textcolor{rojo}{10}111111\} = 173.89.3.191
+			\item{\textbf{Dirección IP RouterA0}}:173.89.\{\textcolor{azul}{000000}\textcolor{rojo}{11}\}.\{\textcolor{rojo}{10}000001\} = 173.89.3.129
+			\item{\textbf{Dirección IP HostA1}}:173.89.\{\textcolor{azul}{000000}\textcolor{rojo}{11}\}.\{\textcolor{rojo}{10}000010\} = 173.89.3.130
+		\end{itemize}
+	%% Subred P2P1.0 %%
+	\item{\textbf{Subred P2P1.0}:} 173.89.\{\textcolor{azul}{000000}\textcolor{rojo}{11}\}.\{\textcolor{rojo}{110000}00\}, es decir, \textbf{173.89.3.192/30}
+		\begin{itemize}
+			\item{\textbf{Dirección Broadcast}}: 173.89.\{\textcolor{azul}{000000}\textcolor{rojo}{11}\}.\{\textcolor{rojo}{110000}11\} = 173.89.3.195
+			\item{\textbf{Dirección IP RouterA0-serial0}}: 173.89.\{\textcolor{azul}{000000}\textcolor{rojo}{11}\}.\{\textcolor{rojo}{110000}01\} = 173.89.3.193
+			\item{\textbf{Dirección IP RouterA1-serial0}}: 173.89.\{\textcolor{azul}{000000}\textcolor{rojo}{11}\}.\{\textcolor{rojo}{110000}10\} = 173.89.3.194
+		\end{itemize}
+	%% Subred P2P1.1 %%
+	\item{\textbf{Subred P2P1.1}:}173.89.\{\textcolor{azul}{000000}\textcolor{rojo}{11}\}.\{\textcolor{rojo}{110001}00\}, es decir, \textbf{173.89.3.196/30}
+		\begin{itemize}
+			\item{\textbf{Dirección Broadcast}}: 173.89.\{\textcolor{azul}{000000}\textcolor{rojo}{11}\}.\{\textcolor{rojo}{110001}11\} = 173.89.3.199
+			\item{\textbf{Dirección IP RouterA0-serial0}}: 173.89.\{\textcolor{azul}{000000}\textcolor{rojo}{11}\}.\{\textcolor{rojo}{110001}01\} = 173.89.3.197
+			\item{\textbf{Dirección IP RouterA1-serial0}}: 173.89.\{\textcolor{azul}{000000}\textcolor{rojo}{11}\}.\{\textcolor{rojo}{110001}10\} = 173.89.3.198
+		\end{itemize}
+	%% Subred P2P1.2 %%
+	\item{\textbf{Subred P2P1.2}:}173.89.\{\textcolor{azul}{000000}\textcolor{rojo}{11}\}.\{\textcolor{rojo}{110010}00\}, es decir, \textbf{173.89.3.200/30}
+		\begin{itemize}
+			\item{\textbf{Dirección Broadcast}}: 173.89.\{\textcolor{azul}{000000}\textcolor{rojo}{11}\}.\{\textcolor{rojo}{110010}11\} = 173.89.3.203
+			\item{\textbf{Dirección IP RouterA0-serial0}}: 173.89.\{\textcolor{azul}{000000}\textcolor{rojo}{11}\}.\{\textcolor{rojo}{110010}01\} = 173.89.3.201
+			\item{\textbf{Dirección IP RouterA1-serial0}}: 173.89.\{\textcolor{azul}{000000}\textcolor{rojo}{11}\}.\{\textcolor{rojo}{110010}10\} = 173.89.3.202
+		\end{itemize}
+	%% Subred P2P1.3 %%
+	\item{\textbf{Subred P2P1.3}:}173.89.\{\textcolor{azul}{000000}\textcolor{rojo}{11}\}.\{\textcolor{rojo}{110011}00\}, es decir, \textbf{173.89.3.204/30}
+		\begin{itemize}
+			\item{\textbf{Dirección Broadcast}}: 173.89.\{\textcolor{azul}{000000}\textcolor{rojo}{11}\}.\{\textcolor{rojo}{110011}11\} = 173.89.3.207
+			\item{\textbf{Dirección IP RouterA0-serial0}}: 173.89.\{\textcolor{azul}{000000}\textcolor{rojo}{11}\}.\{\textcolor{rojo}{110011}01\} = 173.89.3.205
+			\item{\textbf{Dirección IP RouterA1-serial0}}: 173.89.\{\textcolor{azul}{000000}\textcolor{rojo}{11}\}.\{\textcolor{rojo}{110011}10\} = 173.89.3.206
+		\end{itemize}
+	%% Subred P2P1.4 %%
+	\item{\textbf{Subred P2P1.4}:}173.89.\{\textcolor{azul}{000000}\textcolor{rojo}{11}\}.\{\textcolor{rojo}{110100}00\}, es decir, \textbf{173.89.3.208/30}
+		\begin{itemize}
+			\item{\textbf{Dirección Broadcast}}: 173.89.\{\textcolor{azul}{000000}\textcolor{rojo}{11}\}.\{\textcolor{rojo}{110100}11\} = 173.89.3.211
+			\item{\textbf{Dirección IP RouterA0-serial0}}: 173.89.\{\textcolor{azul}{000000}\textcolor{rojo}{11}\}.\{\textcolor{rojo}{110100}01\} = 173.89.3.209
+			\item{\textbf{Dirección IP RouterA1-serial0}}: 173.89.\{\textcolor{azul}{000000}\textcolor{rojo}{11}\}.\{\textcolor{rojo}{110100}10\} = 173.89.3.210
+		\end{itemize}
+	%% Subred P2P1.5 %%
+	\item{\textbf{Subred P2P1.5}:}173.89.\{\textcolor{azul}{000000}\textcolor{rojo}{11}\}.\{\textcolor{rojo}{110101}00\}, es decir, \textbf{173.89.3.212/30}
+		\begin{itemize}
+			\item{\textbf{Dirección Broadcast}}: 173.89.\{\textcolor{azul}{000000}\textcolor{rojo}{11}\}.\{\textcolor{rojo}{110101}11\} = 173.89.3.215
+			\item{\textbf{Dirección IP RouterA0-serial0}}: 173.89.\{\textcolor{azul}{000000}\textcolor{rojo}{11}\}.\{\textcolor{rojo}{110101}01\} = 173.89.3.213
+			\item{\textbf{Dirección IP RouterA1-serial0}}: 173.89.\{\textcolor{azul}{000000}\textcolor{rojo}{11}\}.\{\textcolor{rojo}{110101}10\} = 173.89.3.214
+		\end{itemize}
+	%% Subred P2P1.6 %%
+	\item{\textbf{Subred P2P1.6}:}173.89.\{\textcolor{azul}{000000}\textcolor{rojo}{11}\}.\{\textcolor{rojo}{110110}00\}, es decir, \textbf{173.89.3.216/30}
+		\begin{itemize}
+			\item{\textbf{Dirección Broadcast}}: 173.89.\{\textcolor{azul}{000000}\textcolor{rojo}{11}\}.\{\textcolor{rojo}{110110}11\} = 173.89.3.219
+			\item{\textbf{Dirección IP RouterA0-serial0}}: 173.89.\{\textcolor{azul}{000000}\textcolor{rojo}{11}\}.\{\textcolor{rojo}{110110}01\} = 173.89.3.217
+			\item{\textbf{Dirección IP RouterA1-serial0}}: 173.89.\{\textcolor{azul}{000000}\textcolor{rojo}{11}\}.\{\textcolor{rojo}{110110}10\} = 173.89.3.218
+		\end{itemize}
+\end{itemize}
+

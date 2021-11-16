@@ -1,0 +1,19 @@
+%%%%%%%%%%%% DIRECIONAMIENTO ORGANIZACIÓN B  %%%%%%%%%%%%
+	
+\section{Configuración en Cisco Packet Tracer.}
+
+\par El primer paso para configurar estas dos organizaciones en \texttt{Cisco Packet Tracer} es establecer la configuración de los hosts y la de las interfaces de los routers. En los hosts indico la IP del \texttt{Gateway} por defecto que será la dirección IP de la interfaz del router a la que está conectado, la IP del host y su máscara de red. Estos pasos los hago manualmente mediante la interfaz gráfica en la sección config. En cambio, para configurar los routers utilizaré sus terminales.
+\par Ejemplo de configuración inicial de un router:
+%%% CÓDIGO %%%
+\begin{listing}[style=consola]
+Router> enable
+Router# configure terminal
+Router(config)# hostname Router
+Router(config)# interface IFNAME
+Router(config-if)# no shutdown
+Router(config-if)# ip address IP_ADDR MASK 
+Router(config-if)# exit
+Router(config)# exit
+Router# write
+\end{listing}
+\par Primero entro en modo privilegiado, después, en modo configurador. Cambio el nombre del router para mayor legibilidad y configuro cada interfaz insertando su IP, máscara de red correspondiente y activando cada interfaz. Una vez configurado el router tengo que guardar los cambios en memoria \texttt{NVRAM}.
