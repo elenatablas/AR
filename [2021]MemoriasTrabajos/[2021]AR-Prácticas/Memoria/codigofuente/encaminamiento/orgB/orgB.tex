@@ -6,29 +6,29 @@
 %%% CÓDIGO %%%
 \begin{listing}[style=consola]
 Router> enable
+Router# configure terminal
 Router(config)# router ospf 100
-sRouter(config-router)# network MASCARA area AREA_ID
+Router(config-router)# network MASCARA area AREA_ID
 \end{listing}
-\par Introduciendo un comando network con los parámetros adecuados para cada subred a las que estuviera directamente conectado el router. Por ejemplo, en el caso del \texttt{RouterB1}: //TODO
+\par Introduciendo un comando network con los parámetros adecuados para cada subred a las que estuviera directamente conectado el router. Por ejemplo, en el caso del \texttt{RouterB1}:
 \begin{listing}[style=consola]
-network 173.89.10.132 0.0.0.3 area 0
-network 173.89.10.136 0.0.0.3 area 0
-network 173.89.12.0 0.0.0.127 area 1
-network 173.89.13.200 0.0.0.3 area 2
-network 173.89.13.192 0.0.0.3 area 2
+network 173.89.9.132 0.0.0.3 area 0
+network 173.89.9.136 0.0.0.3 area 0
+network 173.89.10.0 0.0.0.127 area 1
 \end{listing}
-\par Al igual que en la organización A para RIP, aquí también he introducido el siguiente comando en los routers conectados a subredes de área local (RouterB(1,2,3,4)//TODO) por las que no queremos que se envíen mensajes LSA del protocolo OSPF:
+\par Al igual que en la organización A para RIP, aquí también he introducido el siguiente comando en los routers conectados a subredes de área local (RouterB(0,2,3,4 y 5)) por las que no quiero que se envíen mensajes LSA del protocolo OSPF:
 \begin{listing}[style=consola]
-Router(config-router)# passive-interface FastEthernet 0/0
+Router(config-router)# passive-interface FastEthernet0/0
 \end{listing}
-\par Por último, también quiero destacar la configuración adicional que hemos introducido en el RouterB//TODO, el ABR en la red de la organización B para conseguir reducir el número de entradas en las tablas de rutas gracias a la \textbf{agregación de rutas}.
+\par Por último, también quiero destacar la configuración adicional que he introducido en el RouterB1 y RouterB2, los ABRs en la red de la organización B para conseguir reducir el número de entradas en las tablas de rutas gracias a la \textbf{agregación de rutas}.
 \par Para ello, he utilizado los siguientes comandos:
 \begin{listing}[style=consola]
-RouterB(config-router)# area 0 range 173.89.8.0 255.255.252.0
-RouterB(config-router)# area 2 range 172.59.12.0 255.255.255.0
-RouterB(config-router)# area 2 range 173.89.13.0 255.255.255.0
+RouterB1(config-router)# area 0 range 173.89.8.0 255.255.254.0
+RouterB1(config-router)# area 1 range 173.89.10.0 255.255.255.0
+RouterB2(config-router)# area 0 range 173.89.8.0 255.255.254.0
+RouterB2(config-router)# area 2 range 173.89.11.0 255.255.255.0
 \end{listing}
-\par Después de introducirlos observamos cómo se reduce el número de entradas en las tablas de rutas de forma considerable, puesto que los routers de la organización ya no necesitan conocer cómo llegar a cada subred de otra área si no que es suficiente saber cómo llegar a esa área.
+\par Después de introducirlos observo cómo se reduce el número de entradas en las tablas de rutas de forma considerable, puesto que los routers de la organización ya no necesitan conocer cómo llegar a cada subred de otra área si no que es suficiente saber cómo llegar a esa área.
 \par Este último cambio es posible gracias a que al realizar el direccionamiento de la organización B, he hecho un esfuerzo por repartir el espacio de direcciones de forma que, después, las subredes dentro de la misma área se pudieran resumir sin que se produjeran colisiones.
 
 \input{codigofuente/encaminamiento/orgB/cuest1}

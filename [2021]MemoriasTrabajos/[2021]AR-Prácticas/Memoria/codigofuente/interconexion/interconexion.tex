@@ -16,9 +16,9 @@
 \begin{listing}[style=consola]
 RouterB0(config)# router rip
 RouterB0(config-router)# redistribute ospf 100 metric 1
-RouterB0(config-router)# passive-interface FastEthernet 0/0
-RouterB0(config-router)# passive-interface Serial 3/0
-RouterB0(config-router)# passive-interface Serial 6/0
+RouterB0(config-router)# passive-interface FastEthernet0/0
+RouterB0(config-router)# passive-interface Serial3/0
+RouterB0(config-router)# passive-interface Serial4/0
 RouterB0(config-router)# exit
 \end{listing}
 	\item Redistribución de rutas de RIP a OSPF:
@@ -26,7 +26,7 @@ RouterB0(config-router)# exit
 \begin{listing}[style=consola]
 RouterB0(config)# router ospf 100
 RouterB0(config-router)# redistribute rip metric 200 subnets 
-RouterB0(config-router)# passive-interface Serial 2/0
+RouterB0(config-router)# passive-interface Serial2/0
 RouterB0(config-router)# exit
 \end{listing}
 \end{itemize}
