@@ -3,3 +3,40 @@
 2.[OrgB] Muestre las tablas de rutas de RouterB3 y comente los aspectos más
 relevantes. ¿Cuál es el camino óptimo para alcanzar RouterB4?
 \end{ejer}
+\par La tabla de rutas muestra las entradas C, que son las redes directamente conectadas al router por medio de sus interfaces. También las entradas O IA, que contienen la información de enrutamiento del protocolo OSPF de las redes inter área a las que está conectado. El área 0 es la 173.89.8.0/23 y el área 2 es la 173.89.11.0/24. Además, incluye la distancia administrativa que por defecto es 0 en las directamente conectadas y 110 en OSPF y el coste para llegar a esas subredes o áreas.
+
+\begin{listing}[style=consola]
+RouterB3#show ip route
+	173.89.0.0/16 is variably subnetted, 4 subnets, 3 masks
+O IA    173.89.8.0/23 [110/66] via 173.89.10.1, 00:20:05, FastEthernet1/0
+C       173.89.10.0/25 is directly connected, FastEthernet1/0
+C       173.89.10.128/27 is directly connected, FastEthernet0/0
+O IA    173.89.11.0/24 [110/129] via 173.89.10.1, 00:19:55, FastEthernet1/0
+\end{listing}
+
+\par El router RouterB3 se encuentra en el área 1 y el router RouterB4 en el área 2. El camino óptimo para llegar al router RouterB4 desde RouterB3 será pasando por el router RouterB2 y las subredes 173.89.9.136/30 y 173.89.11.192/30.
+\par Compruebo el camino utilizando el comando traceroute desde el router RouterB3 hasta todas las interfaces de red del RouterB4 donde se puede observar solo tres saltos, el salto a la IP de la interfaz FastEthernet0/0 de RouterB1 que pertenece a la subred LAN 2.2, a la IP de la interfaz Serial 3/0 de RouterB2 que pertenece a la subred P2P 2.2 y la IP de la interfaz Serial2/0 de RouterB4.
+\begin{listing}[style=consola]
+RouterB3#traceroute 173.89.11.194
+Tracing the route to 173.89.11.194
+
+  1   173.89.10.1     0 msec    0 msec    0 msec    
+  2   173.89.9.138    34 msec   1 msec    0 msec    
+  3   173.89.11.194   52 msec   48 msec   1 msec    
+  
+RouterB3#traceroute 173.89.11.129
+Tracing the route to 173.89.11.129
+
+  1   173.89.10.1     20 msec   0 msec    0 msec    
+  2   173.89.9.138    1 msec    25 msec   0 msec    
+  3   173.89.11.194   71 msec   52 msec   44 msec   
+  
+RouterB3#traceroute 173.89.11.197
+Tracing the route to 173.89.11.197
+
+  1   173.89.10.1     0 msec    0 msec    0 msec    
+  2   173.89.9.138    1 msec    0 msec    27 msec   
+  3   173.89.11.194   27 msec   1 msec    3 msec  
+\end{listing}
+
+

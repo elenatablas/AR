@@ -2,3 +2,38 @@
 \begin{ejer}
 5.[OrgB]  Realice la configuración necesaria para que el camino óptimo entre RouterB3 y RouterB4 pase a través de RouterB0.
 \end{ejer}
+\par Para conseguir esto es necesario aumentar el coste de la interfaz Serial 3/0 del router RouterB1 para que pase a tener un coste mayor que la suma de los costes de pasar por el router RouterB0 que sería 64 + 64 = 128.
+Entonces será suficiente con configurar la interfaz para que tenga un coste de 129, lo que podemos hacer con la siguiente secuencia de comandos:
+\begin{listing}[style=consola]
+RouterB1>enable
+RouterB1#configure terminal
+RouterB1(config)#interface Serial3/0
+RouterB1(config-if)#ip ospf cost 129
+\end{listing}
+\par Compruebo que la modificación se ha llevado a cabo correctamente: \\
+\begin{listing}[style=consola]
+RouterB1#sh ip ospf interface Serial3/0
+Serial3/0 is up, line protocol is up
+  Internet address is 173.89.9.137/30, Area 0
+  Process ID 100, Router ID 173.89.10.1, Network Type POINT-TO-POINT, Cost: 129
+  Transmit Delay is 1 sec, State POINT-TO-POINT,
+  Timer intervals configured, Hello 10, Dead 40, Wait 40, Retransmit 5
+    Hello due in 00:00:01
+  Index 2/2, flood queue length 0
+  Next 0x0(0)/0x0(0)
+  Last flood scan length is 1, maximum is 1
+  Last flood scan time is 0 msec, maximum is 0 msec
+  Neighbor Count is 1 , Adjacent neighbor count is 1
+    Adjacent with neighbor 173.89.11.193
+  Suppress hello for 0 neighbor(s)
+\end{listing}
+Y mediante un traceroute ver si sigue el camino esperado:
+\begin{listing}[style=consola]
+RouterB3#traceroute 173.89.11.194
+Tracing the route to 173.89.11.194
+
+  1   173.89.10.1     0 msec    0 msec    0 msec    
+  2   173.89.9.133    12 msec   0 msec    0 msec    
+  3   173.89.9.138    15 msec   3 msec    31 msec   
+  4   173.89.11.194   55 msec   72 msec   1 msec
+\end{listing}

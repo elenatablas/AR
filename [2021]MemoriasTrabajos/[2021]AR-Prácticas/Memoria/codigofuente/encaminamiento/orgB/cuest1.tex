@@ -3,3 +3,28 @@
 1.[OrgB] Realice la configuración necesaria para que RouterB3 se convierta
 en Designated Router (DR) de la LAN 2.2.
 \end{ejer}
+\par El \texttt{Designated Router} de cada subred es el encargado de registrar a las fuentes en el árbol multicast en caso de que haya fuentes activas en la subred correspondiente. El \texttt{DR} es el router que tiene una de sus interfaces la mayor prioridad y en caso de empate, la IP mayor. Por defecto, la prioridad de cada interfaz \texttt{OSPF} es 1.
+\par Compruebo en cualquier router dentro del \texttt{área 1 (RouterB1 y RouterB3)} cual es el router DR, en este momento es el RouterB3 porque la IP de la interfaz FastEthernet0/0 es la mayor:
+\begin{listing}[style=consola]
+RouterB3#show ip ospf interface FastEthernet1/0
+
+FastEthernet1/0 is up, line protocol is up
+  Internet address is 173.89.10.2/25, Area 1
+  Process ID 100, Router ID 173.89.10.129, Network Type BROADCAST, Cost: 1
+  Transmit Delay is 1 sec, State DR, Priority 1
+  Designated Router (ID) 173.89.10.129, Interface address 173.89.10.2
+  Backup Designated Router (ID) 173.89.10.1, Interface address 173.89.10.1
+  Timer intervals configured, Hello 10, Dead 40, Wait 40, Retransmit 5
+    Hello due in 00:00:07
+  Index 2/2, flood queue length 0
+  Next 0x0(0)/0x0(0)
+  Last flood scan length is 1, maximum is 1
+  Last flood scan time is 0 msec, maximum is 0 msec
+  Neighbor Count is 1, Adjacent neighbor count is 1
+    Adjacent with neighbor 173.89.10.1  (Backup Designated Router)
+  Suppress hello for 0 neighbor(s)
+\end{listing}
+\par Por tanto, no hay que realizar ningún cambio. Si fuera el otro router, debería haber aumentado la prioridad de la interfaz, evitando disminuir la prioridad de la interfaz del otro router, porque prioridad 0 significa que no participa en la elección y como solo hay dos routers pertenecientes a esa subred, no habría un \texttt{Backup Designated Router}.
+
+
+

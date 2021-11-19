@@ -2,3 +2,29 @@
 \begin{ejer}
 6.[OrgB]  Realice la configuración necesaria para que el área 2 sea una stub area. Analizando las tablas de rutas que considere relevantes, ¿qué diferencias observa con respecto a la configuración anterior? ¿Por qué?
 \end{ejer}
+\par Para que el área 2 sea una \texttt{stub area} es necesario realizar la siguiente configuración en todos los routers del área (RouterB2, RouterB4 y RouterB5):
+\begin{listing}[style=consola]
+RouterB2>enable
+RouterB2#configure terminal
+RouterB2(config)#router ospf 100
+RouterB2(config-router)#area 2 stubr
+\end{listing}
+\par La tabla de rutas del router RouterB2 no ha sufrido ningún cambio. Mientras tanto las tablas de rutas de los routers RouterB4 y RouterB5 sí. El cambio en la tabla de rutas de los routers involucrados ha sido el mismo en ambas, por resumir voy a coger como ejemplo únicamente la salida de la tabla de rutas del router RouterB4:
+\begin{listing}[style=consola]
+RouterB4#show ip route
+     173.89.0.0/16 is variably subnetted, 6 subnets, 4 masks
+O IA    173.89.8.0/24 [110/129] via 173.89.11.193, 00:02:34, Serial2/0
+O IA    173.89.10.0/25 [110/129] via 173.89.11.193, 00:02:34, Serial2/0
+O       173.89.11.0/25 [110/65] via 173.89.11.198, 00:02:06, Serial3/0
+C       173.89.11.128/26 is directly connected, FastEthernet0/0
+C       173.89.11.192/30 is directly connected, Serial2/0
+C       173.89.11.196/30 is directly connected, Serial3/0
+O*IA 0.0.0.0/0 [110/65] via 173.89.11.193, 00:02:34, Serial2/0
+\end{listing}
+\par Como se puede ver el único cambio está en la última línea donde vemos que se ha añadido un candidato por defecto que coincide con el ABR, el router RouterB2.\\
+\par En la tabla de rutas del router R12 la línea que se ha añadido es la siguiente: 
+\begin{listing}[style=consola]
+O*IA 0.0.0.0/0 [110/129] via 173.89.11.197, 00:02:13, Serial2/0
+\end{listing}
+\par Ahora todos los paquetes cuya dirección de destino pertenezca a una red externa se enviarán hacia el ABR ya que en un \texttt{área stub} se filtran los LSAs de tipo 4 y 5 y, por tanto, los routers del área no conocen los caminos directos a las direcciones de redes externas.
+

@@ -2,3 +2,28 @@
 \begin{ejer}
 3.[OrgB] Realice la configuración necesaria para que el área 1 sea una totally stub area. Analizando las tablas de rutas que considere relevantes, demuestre que se trata de una totally stub área. ¿Qué diferencias observa con respecto a la configuración anterior? ¿Por qué?
 \end{ejer}
+\par El \texttt{área 1} se puede transformar en una \texttt{totally stub area} porque la única alternativa para llegar a las otras áreas es pasar por el router RouterB1 que es el \texttt{ABR} de este área.
+\par He introducido los siguientes comandos en la consola del router RouterB3:
+
+\begin{listing}[style=consola]
+RouterB3>enable
+RouterB3#configure terminal
+RouterB3(config)#router ospf 100
+RouterB3(config-router)#area 1 stub
+\end{listing}
+
+\par Añado los siguientes comandos en la consola del router RouterB1 que tiene un parámetro adicional el último comando porque es el ABR de este área:
+\begin{listing}[style=consola]
+RouterB1>enable
+RouterB1#configure terminal
+RouterB1(config)#router ospf 100
+RouterB1(config-router)#area 1 stub no-summarys
+\end{listing}
+\par El ABR no deja pasar hacia dentro del área los LSAs de tipo 4, tipo 5 ni los de tipo 3. En su lugar el ABR genera un LSA de tipo 3 anunciando una ruta por defecto. Por tanto, en la tabla de rutas del router interno, R10, sólo hay entradas para poder llegar a las redes dentro del propio área, C, y una ruta por defecto, *, para cualquier otra red tanto de otras áreas, IA, como externas.
+\begin{listing}[style=consola]
+RouterB3#show ip route 
+     173.89.0.0/16 is variably subnetted, 2 subnets, 2 masks
+C       173.89.10.0/25 is directly connected, FastEthernet1/0
+C       173.89.10.128/27 is directly connected, FastEthernet0/0
+O*IA 0.0.0.0/0 [110/2] via 173.89.10.1, 00:00:22, FastEthernet1/0
+\end{listing}

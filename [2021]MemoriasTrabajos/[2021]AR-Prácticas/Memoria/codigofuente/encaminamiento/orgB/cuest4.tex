@@ -2,3 +2,17 @@
 \begin{ejer}
 4.[OrgB] Muestre las tablas de rutas de RouterB4 y comente los aspectos más relevantes.
 \end{ejer}
+
+\begin{listing}[style=consola]
+RouterB4>show ip route
+     173.89.0.0/16 is variably subnetted, 6 subnets, 4 masks
+O IA    173.89.8.0/23 [110/129] via 173.89.11.193, 00:44:11, Serial2/0
+O IA    173.89.10.0/24 [110/130] via 173.89.11.193, 00:02:31, Serial2/0
+O       173.89.11.0/25 [110/65] via 173.89.11.198, 00:44:31, Serial3/0
+C       173.89.11.128/26 is directly connected, FastEthernet0/0
+C       173.89.11.192/30 is directly connected, Serial2/0
+C       173.89.11.196/30 is directly connected, Serial3/0
+\end{listing}
+\par La tabla de rutas muestra las entradas C, que son las redes directamente conectadas al router por medio de sus interfaces. También las entradas O IA, que contienen la información de enrutamiento del protocolo OSPF de las redes inter área a las que está conectado. El área 0 es la 173.89.8.0/23 y el área 1 es la 173.89.10.0/24.
+\par Además, dentro de su área hay una subred que está conectada a él por otro router que está directamente conectado a esa subred. Para llegar a la subred 173.89.11.0/25 solo tiene un camino que está conectado por su interfaz Serial3/0, en cambio.
+\par Todas las entradas de la tabla incluyen la distancia administrativa que por defecto es 0 en las directamente conectadas y 110 en OSPF y el coste para llegar a ellas.

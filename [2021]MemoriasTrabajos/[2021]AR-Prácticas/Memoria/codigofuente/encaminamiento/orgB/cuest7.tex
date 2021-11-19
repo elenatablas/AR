@@ -2,3 +2,22 @@
 \begin{ejer}
 7.[OrgB]  Deshabilite la interfaz del router RouterB0 que conecta con el RouterB2. Espere a que la red converja de nuevo. A continuación, realiza el traceroute de nuevo entre RouterB0 y HostB1 y justifica el camino que ahora siguen los paquetes.
 \end{ejer}
+\par Para deshabilitar la interfaz del router RouterB0 que conecta con RouterB2 hay que introducir los siguientes comandos:
+\begin{listing}[style=consola]
+RouterB0> enable
+RouterB0# configure terminal
+RouterB0(config)# interface Serial3/0
+RouterB0(config-if)# shutdown
+\end{listing}
+\par El traceroute entre RouterB0 y HostB1 produce la siguiente salida:
+\begin{listing}[style=consola]
+RouterB0> traceroute 173.89.9.2
+Tracing the route to 173.89.9.2
+
+  1   173.89.9.134    0 msec    13 msec   11 msec   
+  2   173.89.9.138    24 msec   23 msec   10 msec   
+  3   173.89.9.2      20 msec   1 msec    14 msec  
+\end{listing}
+\par En lugar de pasar directamente de RouterB0 a RouterB2 y de ahí al host, ahora tiene que cambiar su recorrido a: RouterB0 $\rightarrow$ \textbf{RouterB1} $\rightarrow$ RouterB2 $\rightarrow$ HostB1, ya que la interfaz está desactivada.
+
+

@@ -1,4 +1,22 @@
 %%%%%%%%%%%% Encaminamiento intra-dominio IPv4 - organización B  %%%%%%%%%%%%
+\newpage
 \begin{ejer}
 8.[OrgB] Utilizando la herramienta Packet Tracer capture tráfico OSPF para mostrar al menos dos tipos de LSA diferentes que se intercambian los routers del escenario e indique su propósito.
 \end{ejer}
+\par Puedo capturar el tráfico OSPF que pasa por un router con el siguiente comando:
+\begin{listing}[style=consola]
+Router# debug ip ospf events
+\end{listing}
+\par Para el ejercicio voy a coger ejemplos a partir del router RouterB1:
+
+\begin{listing}[style=consola]
+00:00:10: OSPF: Build router LSA for area 1, router ID 173.89.10.1, seq 0xffffffff80000002
+\end{listing}
+
+\par Este sería un ejemplo de \textbf{LSA de tipo 1}. El router RouterB1 (router ID: 173.89.10.1) construye un mensaje para anunciar su presencia en, en este caso, el área 1. Realmente se tendría que enviar un LSA de tipo 1 por cada una de las áreas a las que está conectado, que en este caso son dos. Este trabajo lo tendrían que hacer todos los routers.
+
+\begin{listing}[style=consola]
+00:00:40: OSPF: Build summary LSA for area 0, router ID 173.89.10.1, seq 0x80000008
+\end{listing}
+
+\par Éste sería un ejemplo de \textbf{LSA de tipo 3}. El router RouterB1 (router ID: 173.89.10.1) al ser el ABR (Area Border Router) es el encargado de generar un LSA de este tipo por cada subred de un área y las envía a los routers de otras áreas.
