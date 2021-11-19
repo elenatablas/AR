@@ -2,3 +2,124 @@
 \begin{ejer}
 2.[OrgA] Utilizando información de las tablas de rutas y capturas del tráfico RIP en la red (Packet Tracer y/o salida de debug de los routers Cisco), explique el funcionamiento de split horizon sobre algún enlace de la red.
 \end{ejer}
+
+\par Cuando se activa la característica \texttt{Split Horizon}, no se anuncia una red destino a un vecino que actualmente es su mejor siguiente salto para alcanzar dicha red.
+\par Para explicar su funcionamiento voy a proponer el caso donde demuestro que desde el router RouterA1, el router RouterA3 forma parte del camino óptimo para llegar a determinadas subredes que señalaré con la tabla de rutas y que los mensajes destinados a esas subredes pasarán por ese router intermedio.
+
+\begin{listing}[style=consola]
+RouterA1 >show ip route
+     173.89.0.0/16 is variably subnetted, 21 subnets, 6 masks
+R       173.89.0.0/23 [120/1] via 173.89.3.193, 00:00:18, Serial0/0/0
+R       173.89.2.0/24 [120/2] via 173.89.3.206, 00:00:05, Serial0/1/0
+R       173.89.3.0/25 [120/1] via 173.89.3.206, 00:00:05, Serial0/1/0
+R       173.89.3.128/26 [120/1] via 173.89.3.198, 00:00:10, Serial0/0/1
+C       173.89.3.192/30 is directly connected, Serial0/0/0
+L       173.89.3.194/32 is directly connected, Serial0/0/0
+C       173.89.3.196/30 is directly connected, Serial0/0/1
+L       173.89.3.197/32 is directly connected, Serial0/0/1
+R       173.89.3.200/30 [120/1] via 173.89.3.193, 00:00:18, Serial0/0/0
+                        [120/1] via 173.89.3.206, 00:00:05, Serial0/1/0
+C       173.89.3.204/30 is directly connected, Serial0/1/0
+L       173.89.3.205/32 is directly connected, Serial0/1/0
+R       173.89.3.208/30 [120/1] via 173.89.3.198, 00:00:10, Serial0/0/1
+                        [120/1] via 173.89.3.206, 00:00:05, Serial0/1/0
+R       173.89.3.212/30 [120/1] via 173.89.3.206, 00:00:05, Serial0/1/0
+R       173.89.3.216/30 [120/1] via 173.89.3.198, 00:00:10, Serial0/0/1
+R       173.89.8.0/24 [120/2] via 173.89.3.198, 00:00:10, Serial0/0/1
+R       173.89.9.0/25 [120/2] via 173.89.3.198, 00:00:10, Serial0/0/1
+R       173.89.9.128/30 [120/2] via 173.89.3.198, 00:00:10, Serial0/0/1
+R       173.89.9.132/30 [120/2] via 173.89.3.198, 00:00:10, Serial0/0/1
+R       173.89.9.136/30 [120/2] via 173.89.3.198, 00:00:10, Serial0/0/1
+R       173.89.10.0/24 [120/2] via 173.89.3.198, 00:00:10, Serial0/0/1
+R       173.89.11.0/25 [120/2] via 173.89.3.198, 00:00:10, Serial0/0/1
+\end{listing} 
+
+\par El camino óptimo para llegar a las subredes 173.89.2.0/24, 173.89.3.212/30 y 173.89.3.0/25, además de posible opción para las subredes 173.89.3.200/30 y 173.89.3.208/30 es pasar por el router RouterA3. \\
+
+\begin{listing}[style=consola]
+RouterA1> enable
+RouterA1# debug ip rip
+RIP: sending  v2 update to 224.0.0.9 via Serial0/1/0 (173.89.3.205)
+RIP: build update entries
+      173.89.0.0/23 via 0.0.0.0, metric 2, tag 0
+      173.89.3.128/26 via 0.0.0.0, metric 2, tag 0
+      173.89.3.192/30 via 0.0.0.0, metric 1, tag 0
+      173.89.3.196/30 via 0.0.0.0, metric 1, tag 0
+      173.89.3.216/30 via 0.0.0.0, metric 2, tag 0
+      173.89.8.0/24 via 0.0.0.0, metric 3, tag 0
+      173.89.9.0/25 via 0.0.0.0, metric 3, tag 0
+      173.89.9.128/30 via 0.0.0.0, metric 3, tag 0
+      173.89.9.132/30 via 0.0.0.0, metric 3, tag 0
+      173.89.9.136/30 via 0.0.0.0, metric 3, tag 0
+      173.89.10.0/24 via 0.0.0.0, metric 3, tag 0
+      173.89.11.0/24 via 0.0.0.0, metric 3, tag 0
+RouterA1# no debug ip rip
+\end{listing} 
+\begin{listing}[style=consola]
+RouterA3> enable
+RouterA3# debug ip rip
+RIP: received v2 update from 173.89.3.205 on Serial0/0/1
+      173.89.0.0/23 via 0.0.0.0 in 2 hops
+      173.89.3.128/26 via 0.0.0.0 in 2 hops
+      173.89.3.192/30 via 0.0.0.0 in 1 hops
+      173.89.3.196/30 via 0.0.0.0 in 1 hops
+      173.89.3.216/30 via 0.0.0.0 in 2 hops
+      173.89.8.0/24 via 0.0.0.0 in 3 hops
+      173.89.9.0/25 via 0.0.0.0 in 3 hops
+      173.89.9.128/30 via 0.0.0.0 in 3 hops
+      173.89.9.132/30 via 0.0.0.0 in 3 hops
+      173.89.9.136/30 via 0.0.0.0 in 3 hops
+      173.89.10.0/24 via 0.0.0.0 in 3 hops
+      173.89.11.0/24 via 0.0.0.0 in 16 hops
+      173.89.11.0/25 via 0.0.0.0 in 3 hops
+RouterA3# no debug ip rip
+\end{listing} 
+\par Compruebo que el router RouterA1 no le envía información de actualización sobre las subredes señaladas que he visto que forma parte de su camino óptimo. En cambio, este router está enviando a la dirección broadcast \texttt{224.0.0.9} un mensaje por cada interfaz con la información actualizada de su vector distancias donde los routers conectados directamente a la subred a la que pertenece esa interfaz no es su mejor siguiente para encontrar las redes indicadas en el mensaje.
+\par Tal y como mostré en el ejercicio anterior, la tabla de rutas de RouterA3 muestra 2 entradas, 173.89.3.192/30 y 173.89.3.196/30 donde un posible candidato para formar parte del camino óptimo entre el RouterA3 y esas subredes es pasando por RouterA1.
+\begin{listing}[style=consola]
+RouterA1> enable
+RouterA1# debug ip rip
+RIP: received v2 update from 173.89.3.206 on Serial0/1/0
+      173.89.0.0/23 via 0.0.0.0 in 2 hops
+      173.89.2.0/24 via 0.0.0.0 in 2 hops
+      173.89.3.0/25 via 0.0.0.0 in 1 hops
+      173.89.3.128/26 via 0.0.0.0 in 2 hops
+      173.89.3.200/30 via 0.0.0.0 in 1 hops
+      173.89.3.208/30 via 0.0.0.0 in 1 hops
+      173.89.3.212/30 via 0.0.0.0 in 1 hops
+      173.89.3.216/30 via 0.0.0.0 in 2 hops
+      173.89.8.0/24 via 0.0.0.0 in 3 hops
+      173.89.9.0/25 via 0.0.0.0 in 3 hops
+      173.89.9.128/30 via 0.0.0.0 in 3 hops
+      173.89.9.132/30 via 0.0.0.0 in 3 hops
+      173.89.9.136/30 via 0.0.0.0 in 3 hops
+      173.89.10.0/24 via 0.0.0.0 in 3 hops
+      173.89.11.0/24 via 0.0.0.0 in 3 hops
+RouterA1# no debug ip rip
+\end{listing} 
+\begin{listing}[style=consola]
+RouterA3> enable
+RouterA3# debug ip rip
+RIP: sending  v2 update to 224.0.0.9 via Serial0/0/1 (173.89.3.206)
+RIP: build update entries
+      173.89.0.0/23 via 0.0.0.0, metric 2, tag 0
+      173.89.2.0/24 via 0.0.0.0, metric 2, tag 0
+      173.89.3.0/25 via 0.0.0.0, metric 1, tag 0
+      173.89.3.128/26 via 0.0.0.0, metric 2, tag 0
+      173.89.3.200/30 via 0.0.0.0, metric 1, tag 0
+      173.89.3.208/30 via 0.0.0.0, metric 1, tag 0
+      173.89.3.212/30 via 0.0.0.0, metric 1, tag 0
+      173.89.3.216/30 via 0.0.0.0, metric 2, tag 0
+      173.89.8.0/24 via 0.0.0.0, metric 3, tag 0
+      173.89.9.0/25 via 0.0.0.0, metric 3, tag 0
+      173.89.9.128/30 via 0.0.0.0, metric 3, tag 0
+      173.89.9.132/30 via 0.0.0.0, metric 3, tag 0
+      173.89.9.136/30 via 0.0.0.0, metric 3, tag 0
+      173.89.10.0/24 via 0.0.0.0, metric 3, tag 0
+      173.89.11.0/24 via 0.0.0.0, metric 3, tag 0
+RouterA3# no debug ip rip
+\end{listing} 
+
+\par Con estos datos, confirmo que es imposible que en este debug aparezca información las dos subredes mencionadas anteriormente. \\
+
+

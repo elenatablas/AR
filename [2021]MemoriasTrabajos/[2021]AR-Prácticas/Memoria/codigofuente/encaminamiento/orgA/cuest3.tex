@@ -2,5 +2,170 @@
 \begin{ejer}
 3.[OrgA] Empleando el comando tracert, muestre la ruta que sigue el tráfico desde el HostA2 hasta la interfaz de RouterA2 que conecta con la Organización B. ¿Qué pasa si lo hacemos a la interfaz del RouterB0 en la red P2P1.6?
 \par Con la simulación en marcha, desactive en RouterA3 la interfaz de salida hacia RouterA2. Utilizando información de las tablas de rutas y capturas del tráfico RIP en la red (Packet Tracer y/o salida de debug de los routers Cisco), explique en detalle cómo RIP converge a una nueva solución para alcanzar RouterA2. Céntrese únicamente en los routers RouterA3 y RouterA2.
-\par Indique, en caso de que aplique, el funcionamiento sobre este escenario y el uso de las técnicas triggered updates y poison reverse.
+\par Indique, en caso de que aplique, el funcionamiento sobre este escenario y el uso de las técnicas triggered updates y poison reverse. \\
 \end{ejer}
+
+\par Consola del HostA2, donde muestro la ruta que sigue el tráfico hasta la interfaz de RouterA3 que conecta con la Organización B: 
+
+\begin{listing}[style=consola]
+C:\>tracert 173.89.3.217
+
+Tracing route to 173.89.3.217 over a maximum of 30 hops: 
+
+  1   0 ms      10 ms     0 ms      173.89.2.1
+  2   14 ms     27 ms     0 ms      173.89.3.213
+  3   18 ms     0 ms      14 ms     173.89.3.217
+
+Trace complete.
+\end{listing}
+\par Consola del HostA2, donde muestro la ruta que sigue el tráfico hasta la interfaz de RouterB0 que conecta con la Organización B, puedo comprobar que hay un salto más porque traspasa RouterA3:
+\begin{listing}[style=consola]
+C:\>tracert 173.89.3.218
+
+Tracing route to 173.89.3.218 over a maximum of 30 hops: 
+
+  1   0 ms      0 ms      0 ms      173.89.2.1
+  2   0 ms      0 ms      19 ms     173.89.3.213
+  3   16 ms     2 ms      34 ms     173.89.3.209
+  4   26 ms     45 ms     48 ms     173.89.3.218
+
+Trace complete.
+\end{listing} 
+\par Primero miro las \textbf{características} del protocolo \texttt{RIP} que se está usando en este router. Realiza un envío periódico de mensajes \texttt{RIP Response} cada 30 segundos de su vector de distancias actualizado. Si durante 180 segundos no se ha vuelto a saber de una determinada red destino, ésta se elimina de la \texttt{routing database}. Puedo observar que no implementa la característica \textbf{triggered updates} porque la tabla de las interfaces que están conectadas a este router que implementan el protocolo \texttt{RIP} no hay ninguna información en la columna \texttt{Triggered RIP}.
+\begin{listing}[style=consola]
+Routing Protocol is "rip"
+Sending updates every 30 seconds, next due in 24 seconds
+Invalid after 180 seconds, hold down 180, flushed after 240
+Outgoing update filter list for all interfaces is not set
+Incoming update filter list for all interfaces is not set
+Redistributing: rip
+Default version control: send version 2, receive 2
+  Interface             Send  Recv  Triggered RIP  Key-chain
+  Serial0/1/1           2     2     
+  Serial0/0/1           2     2     
+  Serial0/1/0           2     2     
+  Serial0/0/0           2     2
+\end{listing}
+\par Una vez sé cómo funciona el protocolo en cada interfaz de este router voy a ver algunos mensajes que se envían y se reciben cuando desactivo la interfaz \texttt{Serial0/1/0}.
+\begin{listing}[style=consola]
+RouterA3# debug ip rip
+RIP protocol debugging is on
+RouterA3#configure terminal
+RouterA3(config)# interface Serial0/1/0
+RouterA3(config-if)# shutdown
+RIP: sending  v2 update to 224.0.0.9 via Serial0/1/1 (173.89.3.213)
+RIP: build update entries
+      173.89.0.0/23 via 0.0.0.0, metric 2, tag 0
+      173.89.3.0/25 via 0.0.0.0, metric 1, tag 0
+      173.89.3.128/26 via 0.0.0.0, metric 2, tag 0
+      173.89.3.192/30 via 0.0.0.0, metric 2, tag 0
+      173.89.3.196/30 via 0.0.0.0, metric 2, tag 0
+      173.89.3.200/30 via 0.0.0.0, metric 1, tag 0
+      173.89.3.204/30 via 0.0.0.0, metric 1, tag 0
+      173.89.3.216/30 via 0.0.0.0, metric 16, tag 0
+      173.89.8.0/24 via 0.0.0.0, metric 16, tag 0
+      173.89.9.0/25 via 0.0.0.0, metric 16, tag 0
+      173.89.9.128/30 via 0.0.0.0, metric 16, tag 0
+      173.89.9.132/30 via 0.0.0.0, metric 16, tag 0
+      173.89.9.136/30 via 0.0.0.0, metric 16, tag 0
+      173.89.10.0/24 via 0.0.0.0, metric 16, tag 0
+      173.89.11.0/24 via 0.0.0.0, metric 16, tag 0
+RIP: sending  v2 update to 224.0.0.9 via Serial0/0/1 (173.89.3.206)
+RIP: build update entries
+      173.89.0.0/23 via 0.0.0.0, metric 2, tag 0
+      173.89.2.0/24 via 0.0.0.0, metric 2, tag 0
+      173.89.3.0/25 via 0.0.0.0, metric 1, tag 0
+      173.89.3.128/26 via 0.0.0.0, metric 2, tag 0
+      173.89.3.200/30 via 0.0.0.0, metric 1, tag 0
+      173.89.3.212/30 via 0.0.0.0, metric 1, tag 0
+      173.89.3.216/30 via 0.0.0.0, metric 16, tag 0
+      173.89.8.0/24 via 0.0.0.0, metric 16, tag 0
+      173.89.9.0/25 via 0.0.0.0, metric 16, tag 0
+      173.89.9.128/30 via 0.0.0.0, metric 16, tag 0
+      173.89.9.132/30 via 0.0.0.0, metric 16, tag 0
+      173.89.9.136/30 via 0.0.0.0, metric 16, tag 0
+      173.89.10.0/24 via 0.0.0.0, metric 16, tag 0
+      173.89.11.0/24 via 0.0.0.0, metric 16, tag 0
+RIP: sending  v2 update to 224.0.0.9 via Serial0/0/0 (173.89.3.202)
+RIP: build update entries
+      173.89.2.0/24 via 0.0.0.0, metric 2, tag 0
+      173.89.3.0/25 via 0.0.0.0, metric 1, tag 0
+      173.89.3.196/30 via 0.0.0.0, metric 2, tag 0
+      173.89.3.204/30 via 0.0.0.0, metric 1, tag 0
+      173.89.3.212/30 via 0.0.0.0, metric 1, tag 0
+      173.89.3.216/30 via 0.0.0.0, metric 16, tag 0
+      173.89.8.0/24 via 0.0.0.0, metric 16, tag 0
+      173.89.9.0/25 via 0.0.0.0, metric 16, tag 0
+      173.89.9.128/30 via 0.0.0.0, metric 16, tag 0
+      173.89.9.132/30 via 0.0.0.0, metric 16, tag 0
+      173.89.9.136/30 via 0.0.0.0, metric 16, tag 0
+      173.89.10.0/24 via 0.0.0.0, metric 16, tag 0
+      173.89.11.0/24 via 0.0.0.0, metric 16, tag 0
+\end{listing}
+\par Cuando desactivo la interfaz, observo que ocho redes se quedan inalcanzables porque el único camino que tenía desde este router hasta estas ocho subredes, 173.89.3.216/30, 173.89.8.0/24, 173.89.9.0/25, 173.89.9.128/30, 173.89.9.132/30, 173.89.9.136/30, 173.89.10.0/24, 173.89.11.0/24, era mediante esa interfaz como he comentado en el primer ejercicio.
+\par Cuando monitorizo los mensajes \texttt{RIP} veo que sigue esperando los 30 segundos como si fuera otro envío periódico, por tanto aseguro que no usa la característica \texttt{triggered updates} porque no recibe \texttt{request, ack}, ni empieza el tiempo de retransmisión. En cambio, si está activado \texttt{poisson reverse}, las redes inalcanzables se anuncian con coste infinito, que en el caso de RIP es 16, como se puede ver en las entradas de esas dos IPs.
+\begin{listing}[style=consola]
+RouterA3# no debug ip rip
+RouterA3#show ip route
+	173.89.0.0/16 is variably subnetted, 21 subnets, 6 masks
+R       173.89.0.0/23 [120/1] via 173.89.3.201, 00:00:08, Serial0/0/0
+R       173.89.2.0/24 [120/1] via 173.89.3.214, 00:00:24, Serial0/1/1
+C       173.89.3.0/25 is directly connected, GigabitEthernet0/0
+L       173.89.3.1/32 is directly connected, GigabitEthernet0/0
+R       173.89.3.128/26 [120/1] via 173.89.3.201, 00:00:08, Serial0/0/0
+R       173.89.3.192/30 [120/1] via 173.89.3.201, 00:00:08, Serial0/0/0
+                        [120/1] via 173.89.3.205, 00:00:11, Serial0/0/1
+R       173.89.3.196/30 [120/1] via 173.89.3.205, 00:00:11, Serial0/0/1
+C       173.89.3.200/30 is directly connected, Serial0/0/0
+L       173.89.3.202/32 is directly connected, Serial0/0/0
+C       173.89.3.204/30 is directly connected, Serial0/0/1
+L       173.89.3.206/32 is directly connected, Serial0/0/1
+C       173.89.3.212/30 is directly connected, Serial0/1/1
+L       173.89.3.213/32 is directly connected, Serial0/1/1
+R       173.89.3.216/30 [120/2] via 173.89.3.205, 00:00:11, Serial0/0/1
+R       173.89.8.0/24 [120/3] via 173.89.3.205, 00:00:11, Serial0/0/1
+R       173.89.9.0/25 [120/3] via 173.89.3.205, 00:00:11, Serial0/0/1
+R       173.89.9.128/30 [120/3] via 173.89.3.205, 00:00:11, Serial0/0/1
+R       173.89.9.132/30 [120/3] via 173.89.3.205, 00:00:11, Serial0/0/1
+R       173.89.9.136/30 [120/3] via 173.89.3.205, 00:00:11, Serial0/0/1
+R       173.89.10.0/24 [120/3] via 173.89.3.205, 00:00:11, Serial0/0/1
+R       173.89.11.0/24 [120/3] via 173.89.3.205, 00:00:11, Serial0/0/1
+\end{listing}
+\par En la tabla de rutas se han eliminado las entradas de las IPs que estaban conectadas por esa interfaz y se ha calculado las rutas óptimas con los \texttt{mensajes RIP} recibidos de las otras interfaces de red, como se podía ver en la monitorización de antes. Como resultado, la ruta óptima para alcanzar el RouterA2 depende de la interfaz a la que queremos acceder, como se muestra en la tabla de RouterA3 y con los siguientes comandos:
+\begin{listing}[style=consola]
+RouterA3# traceroute 173.89.3.130
+Tracing the route to 173.89.3.130
+
+  1   173.89.3.201    10 msec   14 msec   15 msec   
+  2   173.89.3.130    26 msec   48 msec   23 msec
+  
+RouterA3# traceroute 173.89.3.198
+Tracing the route to 173.89.3.198
+
+  1   173.89.3.205    10 msec   19 msec   23 msec   
+  2   173.89.3.198    39 msec   21 msec   26 msec
+  
+RouterA3# traceroute 173.89.3.217
+Tracing the route to 173.89.3.217
+
+  1   173.89.3.205    8 msec    1 msec    18 msec   
+  2   173.89.3.198    38 msec   34 msec   36 msec
+
+RouterA3# traceroute 173.89.3.209
+Type escape sequence to abort.
+Tracing the route to 173.89.3.209
+
+  1   *     *     *     
+  2   *     *     *     
+  3   *     *     *     
+  4   *     *     *   
+  ...  
+  30  *     *     *   
+\end{listing}
+
+
+
+
+
+
+

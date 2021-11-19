@@ -2,3 +2,64 @@
 \begin{ejer}
 1.[OrgA] Muestre las tablas de rutas de RouterA3 y comente los aspectos más relevantes. ¿Cuál es el camino óptimo para alcanzar la interfaz de RouterA2 que conecta con la Organización B? ¿Por qué? ¿Cuántas alternativas hay para alcanzarlo según la tabla de rutas?
 \end{ejer}
+
+\par La tabla de rutas muestra las entradas, \texttt{C}, que son las redes directamente conectadas al router por medio de sus interfaces y las entradas, \texttt{L}, son las IPs de dichas interfaces.
+\par También contiene entradas, \texttt{R}, con la información de enrutamiento del protocolo RIP de las subredes a las que está conectado y podemos observar que hay varios caminos para ir a unas determinadas subredes. Además, incluye la distancia administrativa que por defecto es 0 en las directamente conectadas y 120 en RIP y el coste para llegar a esas subredes. El coste por defecto es uno por cada router que necesita traspasar para llegar a esa subred.
+
+\begin{listing}[style=consola]
+RouterA3>show ip route 
+     173.89.0.0/16 is variably subnetted, 23 subnets, 6 masks
+R       173.89.0.0/23 [120/1] via 173.89.3.201, 00:00:16, Serial0/0/0
+R       173.89.2.0/24 [120/1] via 173.89.3.214, 00:00:23, Serial0/1/1
+C       173.89.3.0/25 is directly connected, GigabitEthernet0/0
+L       173.89.3.1/32 is directly connected, GigabitEthernet0/0
+R       173.89.3.128/26 [120/1] via 173.89.3.209, 00:00:16, Serial0/1/0
+                        [120/1] via 173.89.3.201, 00:00:16, Serial0/0/0
+R       173.89.3.192/30 [120/1] via 173.89.3.201, 00:00:16, Serial0/0/0
+                        [120/1] via 173.89.3.205, 00:00:24, Serial0/0/1
+R       173.89.3.196/30 [120/1] via 173.89.3.209, 00:00:16, Serial0/1/0
+                        [120/1] via 173.89.3.205, 00:00:24, Serial0/0/1
+C       173.89.3.200/30 is directly connected, Serial0/0/0
+L       173.89.3.202/32 is directly connected, Serial0/0/0
+C       173.89.3.204/30 is directly connected, Serial0/0/1
+L       173.89.3.206/32 is directly connected, Serial0/0/1
+C       173.89.3.208/30 is directly connected, Serial0/1/0
+L       173.89.3.210/32 is directly connected, Serial0/1/0
+C       173.89.3.212/30 is directly connected, Serial0/1/1
+L       173.89.3.213/32 is directly connected, Serial0/1/1
+R       173.89.3.216/30 [120/1] via 173.89.3.209, 00:00:16, Serial0/1/0
+R       173.89.8.0/24 [120/2] via 173.89.3.209, 00:00:16, Serial0/1/0
+R       173.89.9.0/25 [120/2] via 173.89.3.209, 00:00:16, Serial0/1/0
+R       173.89.9.128/30 [120/2] via 173.89.3.209, 00:00:16, Serial0/1/0
+R       173.89.9.132/30 [120/2] via 173.89.3.209, 00:00:16, Serial0/1/0
+R       173.89.9.136/30 [120/2] via 173.89.3.209, 00:00:16, Serial0/1/0
+R       173.89.10.0/24 [120/2] via 173.89.3.209, 00:00:16, Serial0/1/0
+R       173.89.11.0/24 [120/2] via 173.89.3.209, 00:00:16, Serial0/1/0
+\end{listing}
+
+\par El camino óptimo para alcanzar la interfaz se0/1/1 de RouterA4 que tiene asignada la dirección IP 173.89.3.217 es:
+\begin{listing}[style=consola]
+RouterA3>traceroute 173.89.3.217 
+Type escape sequence to abort.
+Tracing the route to 173.89.3.217
+
+  1   173.89.3.209    10 msec   0 msec    13 msec
+
+\end{listing}
+\par Compruebo el camino utilizando el comando traceroute donde se puede observar solo un salto, el salto a la IP de la interfaz Se0/0/1 de RouterA2 que pertenece a la subred P2P 1.4.
+\par Desde la tabla también se puede comprobar que hay una entrada para la subred P2P 1.6 donde pertenece la interfaz de RouterA2 que quiero alcanzar. Por tanto, la ruta óptima sería la única opción que es pasando por la interfaz Se0/0/1 de RouterA2, que tiene coste uno.
+\begin{listing}[style=consola]
+RouterA3>show ip route 173.89.3.217
+Routing entry for 173.89.3.216/30
+Known via "rip", distance 120, metric 1
+  Redistributing via rip
+  Last update from 173.89.3.209 on Serial0/1/0, 00:00:06 ago
+  Routing Descriptor Blocks:
+  * 173.89.3.209, from 173.89.3.209, 00:00:06 ago, via Serial0/1/0
+      Route metric is 1, traffic share count is 1
+\end{listing}
+
+
+
+
+
