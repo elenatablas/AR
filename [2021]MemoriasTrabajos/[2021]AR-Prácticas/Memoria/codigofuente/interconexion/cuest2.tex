@@ -1,4 +1,27 @@
 %%%%%%%%%%%% INTERCONEXIÓN %%%%%%%%%%%%
+\newpage
 \begin{ejer}
 2. Realice un traceroute del host HostA2 al HostB4. Explica y justifica el camino que se sigue. Indica cómo es posible que el RouterA1 que utiliza un protocolo de enrutamiento intra-dominio, puede obtener información de otro SA distinto que utiliza otro protocolo de enrutamiento intra-dominio distinto.
 \end{ejer}
+
+\begin{listing}[style=consola]
+C:\>tracert 173.89.11.130
+
+Tracing route to 173.89.11.130 over a maximum of 30 hops: 
+
+  1   21 ms     0 ms      0 ms      173.89.2.1
+  2   0 ms      0 ms      49 ms     173.89.3.213
+  3   96 ms     95 ms     0 ms      173.89.3.205
+  4   1 ms      2 ms      1 ms      173.89.3.198
+  5   57 ms     2 ms      100 ms    173.89.3.218
+  6   4 ms      46 ms     1 ms      173.89.9.134
+  7   91 ms     112 ms    208 ms    173.89.9.138
+  8   126 ms    5 ms      2 ms      173.89.11.194
+  9   58 ms     89 ms     3 ms      173.89.11.130
+
+Trace complete.
+\end{listing}
+\par El camino que sigue es el siguiente: HostA2 $\rightarrow$ RouterA4 $\rightarrow$ RouterA3 $\rightarrow$ RouterA1 $\rightarrow$ RouterA2 $\rightarrow$ RouterB0 $\rightarrow$ RouterB1 $\rightarrow$ RouterB2 $\rightarrow$ RouterB4 $\rightarrow$ HostB4.
+\par Sigue este camino porque en el ejercicio 3 de la organización A del apartado anterior (RIP) se pide que se desactive en RouterA3 la interfaz de salida hacia RouterA2. Como ahora ya no es posible ir por ese camino, va por un camino alternativo que pasa por RouterA1.
+\par Al llegar al RouterB0 en lugar de ir directamente al RouterB2, pasa por el router RouterB1 porque en el ejercicio 5 de la organización B del apartado anterior (OSPF) se pidió que el camino óptimo entre RouterB0 y RouterB2 pasase por RouterB1 y por tanto el camino óptimo entre RouterB0 y RouterB2 aquí también pasa por RouterB1: \textbf{Principio de optimalidad}.
+\par RouterA4 utiliza el protocolo de intradominio RIP, sin embargo, gracias a la redistribución de rutas configurada en el router Router0, he conseguido que la información de encaminamiento a redes de la organización B calculadas mediante OSPF se transmita mediante RIP a los routers de la organización A.

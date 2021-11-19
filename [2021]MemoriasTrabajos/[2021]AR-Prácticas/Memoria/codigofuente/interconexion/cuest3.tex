@@ -2,3 +2,13 @@
 \begin{ejer}
 3. Tras la redistribución consulte las tablas de rutas de los routers del Área 1 para demostrar que se trata de una totally stub área. ¿Qué sucede con la tabla de rutas? ¿Por qué?
 \end{ejer}
+\par Para este ejercicio tendré en consideración únicamente el router RouterB3 ya que aunque el router RouterB1 también pertenece al área 1, a su vez está incluido en el área 0.
+\begin{listing}[style=consola]
+RouterB3>sh ip route
+     173.89.0.0/16 is variably subnetted, 2 subnets, 2 masks
+C       173.89.10.0/25 is directly connected, FastEthernet1/0
+C       173.89.10.128/27 is directly connected, FastEthernet0/0
+O*IA 0.0.0.0/0 [110/2] via 173.89.10.1, 00:23:31, FastEthernet1/0
+\end{listing}
+\par Como podemos ver no aparece ninguna información de rutas a subredes de otras áreas ni tampoco a subredes de sistemas externos, a diferencia de por ejemplo de los routers del área 0 donde encontramos entradas en la tabla de rutas que comienzan por \textbf{O E2} indicando que se tratan entradas OSPF externas de tipo 2.
+\par En este router únicamente tenemos una \textbf{ruta por defecto} al ABR que en este caso es el router R9. Lo que nos lleva a pensar que el área 1 es un \texttt{área totally stub}.

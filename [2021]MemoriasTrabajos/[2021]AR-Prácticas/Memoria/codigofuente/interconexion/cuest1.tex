@@ -2,3 +2,58 @@
 \begin{ejer}
 1. Muestre las tablas de rutas de los routers RouterA2 y RouterB0 y coméntelas en detalle.
 \end{ejer}
+
+\begin{listing}[style=consola]
+RouterA2>show ip route
+     173.89.0.0/16 is variably subnetted, 21 subnets, 6 masks
+R       173.89.0.0/23 [120/2] via 173.89.3.197, 00:00:11, Serial0/0/0
+R       173.89.2.0/24 [120/3] via 173.89.3.197, 00:00:11, Serial0/0/0
+R       173.89.3.0/25 [120/2] via 173.89.3.197, 00:00:11, Serial0/0/0
+C       173.89.3.128/26 is directly connected, GigabitEthernet0/0
+L       173.89.3.130/32 is directly connected, GigabitEthernet0/0
+R       173.89.3.192/30 [120/1] via 173.89.3.197, 00:00:11, Serial0/0/0
+C       173.89.3.196/30 is directly connected, Serial0/0/0
+L       173.89.3.198/32 is directly connected, Serial0/0/0
+R       173.89.3.200/30 [120/2] via 173.89.3.197, 00:00:11, Serial0/0/0
+R       173.89.3.204/30 [120/1] via 173.89.3.197, 00:00:11, Serial0/0/0
+R       173.89.3.212/30 [120/2] via 173.89.3.197, 00:00:11, Serial0/0/0
+C       173.89.3.216/30 is directly connected, Serial0/1/0
+L       173.89.3.217/32 is directly connected, Serial0/1/0
+R       173.89.8.0/24 [120/1] via 173.89.3.218, 00:00:11, Serial0/1/0
+R       173.89.9.0/25 [120/1] via 173.89.3.218, 00:00:11, Serial0/1/0
+R       173.89.9.132/30 [120/1] via 173.89.3.218, 00:00:11, Serial0/1/0
+R       173.89.9.136/30 [120/1] via 173.89.3.218, 00:00:11, Serial0/1/0
+R       173.89.10.0/24 [120/1] via 173.89.3.218, 00:00:07, Serial0/1/0
+R       173.89.10.0/25 is possibly down, routing via 173.89.3.218, Serial0/1/0
+R       173.89.11.0/24 is possibly down, routing via 173.89.3.218, Serial0/1/0
+R       173.89.11.0/25 [120/1] via 173.89.3.218, 00:00:07, Serial0/1/0
+\end{listing}
+\par En la tabla de rutas del router RouterA2 puedo ver que, a diferencia de antes de hacer la redistribución de rutas, ahora hay entradas para llegar a cualquier subred tanto de la organización A como de la organización B.
+\par Para las rutas que se han redistribuido desde OSPF no aparece el número de routers real que hay que atravesar para llegar a una subred. Mientras que para las rutas que se han obtenido directamente por el protocolo RIP, es decir, las rutas a aquellas subredes dentro de la organización A, sí.
+\par También puedo destacar que en la tabla de rutas del router RouterA2 siguen manteniendo las agregaciones de rutas que hice de las áreas 1 y 2. Es decir, en lugar de aparecer una entrada por cada subred de dichas áreas, únicamente aparece una entrada por cada área con la dirección agregada.
+\begin{listing}[style=consola]
+RouterB0>show ip route
+
+     173.89.0.0/16 is variably subnetted, 16 subnets, 5 masks
+R       173.89.0.0/23 [120/3] via 173.89.3.217, 00:00:20, Serial2/0
+R       173.89.2.0/24 [120/4] via 173.89.3.217, 00:00:20, Serial2/0
+R       173.89.3.0/25 [120/3] via 173.89.3.217, 00:00:20, Serial2/0
+R       173.89.3.128/26 [120/1] via 173.89.3.217, 00:00:20, Serial2/0
+R       173.89.3.192/30 [120/2] via 173.89.3.217, 00:00:20, Serial2/0
+R       173.89.3.196/30 [120/1] via 173.89.3.217, 00:00:20, Serial2/0
+R       173.89.3.200/30 [120/3] via 173.89.3.217, 00:00:20, Serial2/0
+R       173.89.3.204/30 [120/2] via 173.89.3.217, 00:00:20, Serial2/0
+R       173.89.3.212/30 [120/3] via 173.89.3.217, 00:00:20, Serial2/0
+C       173.89.3.216/30 is directly connected, Serial2/0
+C       173.89.8.0/24 is directly connected, FastEthernet0/0
+O       173.89.9.0/25 [110/194] via 173.89.9.134, 00:06:10, Serial4/0
+C       173.89.9.132/30 is directly connected, Serial4/0
+O       173.89.9.136/30 [110/193] via 173.89.9.134, 00:06:20, Serial4/0
+O IA    173.89.10.0/24 [110/66] via 173.89.9.134, 00:05:44, Serial4/0
+O IA    173.89.11.0/24 [110/257] via 173.89.9.134, 00:05:29, Serial4/0
+\end{listing}
+\par En la tabla de rutas del router RouterB0 puedo ver cómo conviven los dos protocolos OSPF y RIP en el mismo router.
+\par Las entradas que comienzan con R corresponden con las rutas obtenidas mediante el protocolo RIP, es decir, todas las de la organización A. Mientras que las que comienzan con O son las subredes de la organización A que están en la misma área que el router RouterB0, el área 0. Las entradas que comienzan por O IA son respectivamente las direcciones de las áreas 1 y 2 de OSPF.
+
+
+

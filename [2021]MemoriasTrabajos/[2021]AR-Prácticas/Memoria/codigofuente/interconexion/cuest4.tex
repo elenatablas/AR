@@ -2,3 +2,29 @@
 \begin{ejer}
 4. Consulte también las tablas de rutas de los routers del Área 2 y explique por qué se trata de un área stub. ¿Qué ocurriría en el caso de que no fuera stub? ¿Por qué?
 \end{ejer}
+\par Para este ejercicio considero las tablas de rutas de los routers RouterB4 y RouterB5:
+\begin{listing}[style=consola]
+RouterB4>sh ip route
+     173.89.0.0/16 is variably subnetted, 6 subnets, 5 masks
+O IA    173.89.8.0/23 [110/65] via 173.89.11.193, 00:27:26, Serial2/0
+O IA    173.89.10.0/24 [110/130] via 173.89.11.193, 00:27:36, Serial2/0
+O       173.89.11.0/25 [110/65] via 173.89.11.198, 00:28:32, Serial3/0
+C       173.89.11.128/26 is directly connected, FastEthernet0/0
+C       173.89.11.192/30 is directly connected, Serial2/0
+C       173.89.11.196/30 is directly connected, Serial3/0
+O*IA 0.0.0.0/0 [110/65] via 173.89.11.193, 00:28:32, Serial2/0
+\end{listing}
+
+\begin{listing}[style=consola]
+RouterB5>sh ip route
+     173.89.0.0/16 is variably subnetted, 6 subnets, 5 masks
+O IA    173.89.8.0/23 [110/129] via 173.89.11.197, 00:27:50, Serial2/0
+O IA    173.89.10.0/24 [110/194] via 173.89.11.197, 00:27:50, Serial2/0
+C       173.89.11.0/25 is directly connected, FastEthernet0/0
+O       173.89.11.128/26 [110/65] via 173.89.11.197, 00:28:46, Serial2/0
+O       173.89.11.192/30 [110/128] via 173.89.11.197, 00:28:46, Serial2/0
+C       173.89.11.196/30 is directly connected, Serial2/0
+O*IA 0.0.0.0/0 [110/129] via 173.89.11.197, 00:28:36, Serial2/0
+\end{listing}
+\par A diferencia de en la pregunta anterior aquí se puede ver como sí aparecen rutas hacia redes de otras áreas, pero sigue sin haber rutas hacia redes externas (no hay ninguna entrada que comience por O E2).
+\par Ambos routers tienen una ruta por defecto al ABR, el router RouterB2. Esto y lo anterior nos lleva a pensar que el área 2 es un \texttt{área stub}.
